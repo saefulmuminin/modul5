@@ -21,17 +21,21 @@
  *   Tidak ada jalan terdokumentasi untuk membaca kemajuan dari luar. Maka
  *   arahnya dibalik: berkas ini membuka pintu, dan modulnya yang mengetuk.
  *
- *   Yang perlu ditambahkan di Storyline hanya SATU trigger pada slide
- *   terakhir — Execute JavaScript:
+ *   Yang perlu ditambahkan di Storyline DUA trigger Execute JavaScript:
  *
- *       window.ZLearningSelesai && window.ZLearningSelesai();
+ *     slide pertama   window.ZLearningSiap && window.ZLearningSiap();
+ *     slide terakhir  window.ZLearningSelesai && window.ZLearningSelesai();
+ *
+ *   Keduanya aman dipasang di slide mana pun yang pasti dilewati; yang
+ *   pertama menyatakan modul ini akan mengabari, yang kedua mengabarkan
+ *   tuntas.
  *
  *   Modul ini sudah memakai trigger JavaScript untuk mengatur musik latar
  *   (Script1 sampai Script3 di story_content/user.js), jadi menambahkan satu
  *   lagi bukan hal baru bagi penyusunnya.
  *
  * YANG DIKIRIM
- *   { sumber: "paket-web", status: "siap"    }   sekali, saat modul dimuat
+ *   { sumber: "paket-web", status: "siap"    }   saat ZLearningSiap() dipanggil
  *   { sumber: "paket-web", status: "selesai" }   saat ZLearningSelesai() dipanggil
  *
  *   Pesan "siap" itu PENTING dan bukan basa-basi. Tanpa pesan pembuka,
@@ -39,6 +43,21 @@
  *   yang memang tidak bisa melapor sama sekali — dan modul lama akan terkunci
  *   selamanya. Dengan pesan ini, gerbang baru dipasang setelah Z-Learning tahu
  *   ada yang akan mengabarinya.
+ *
+ *   KENAPA "siap" JUGA DARI TRIGGER, BUKAN DARI PEMUATAN HALAMAN
+ *     Dulu pesan ini dikirim otomatis begitu berkas ini dimuat. Itu janji yang
+ *     tidak bisa ditepati modul yang belum dipasangi trigger di slide
+ *     terakhirnya: ia mengaku akan mengabari, lalu diam selamanya — dan tombol
+ *     "Tandai Selesai" terkunci bagi peserta yang sudah menuntaskan modulnya.
+ *
+ *     Kegagalan itu tidak bergejala di sisi mana pun. Modulnya tampil normal,
+ *     tidak ada galat di konsol, dan admin yang menautkannya tidak punya cara
+ *     mengetahui bahwa ia baru saja memasang jebakan.
+ *
+ *     Dengan "siap" ikut datang dari trigger, modul yang belum disiapkan diam
+ *     total — dan Z-Learning memperlakukannya persis seperti paket lama:
+ *     tombolnya terbuka seperti biasa. Lupa memasang trigger menjadi tidak
+ *     berbahaya, bukan sekadar tidak lengkap.
  *
  * SENGAJA TIDAK ADA TEBAKAN OTOMATIS
  *   Menebak selesai dari waktu tonton, posisi gulir, atau bentuk data simpanan
@@ -105,5 +124,17 @@
     kirim("selesai");
   };
 
-  kirim("siap");
+  var sudahSiap = false;
+
+  /**
+   * Dipanggil oleh trigger Storyline di slide pertama.
+   *
+   * Aman dipanggil berulang: peserta bisa kembali ke slide itu, dan pesan
+   * yang sama berkali-kali tidak menambah apa pun bagi penerimanya.
+   */
+  window.ZLearningSiap = function () {
+    if (sudahSiap) return;
+    sudahSiap = true;
+    kirim("siap");
+  };
 })();

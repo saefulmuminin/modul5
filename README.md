@@ -48,11 +48,26 @@ detik pertama, tanpa membuka satu slide pun.
 `zlearning-lapor.js` sudah dimuat oleh `story.html` dan menyediakan pintunya.
 Yang masih kurang satu: **trigger di proyek Storyline**.
 
-Pada slide terakhir, tambahkan trigger *Execute JavaScript* berisi:
+Tambahkan **dua** trigger *Execute JavaScript*:
 
-```js
-window.ZLearningSelesai && window.ZLearningSelesai();
-```
+| slide | kode |
+|---|---|
+| pertama | `window.ZLearningSiap && window.ZLearningSiap();` |
+| terakhir | `window.ZLearningSelesai && window.ZLearningSelesai();` |
+
+Yang pertama menyatakan modul ini akan mengabari; yang kedua mengabarkan
+tuntas. Keduanya aman dipasang di slide mana pun yang pasti dilewati, dan aman
+menyala berulang.
+
+**Kenapa dua, bukan satu.** Dulu pesan "siap" dikirim otomatis saat modul
+dimuat. Itu janji yang tidak bisa ditepati modul yang belum dipasangi trigger
+selesai: ia mengaku akan mengabari lalu diam, dan tombol **Tandai Selesai**
+terkunci bagi peserta yang sudah menuntaskan modulnya — tanpa galat, tanpa
+gejala, tanpa cara bagi admin untuk mengetahuinya.
+
+Dengan "siap" ikut datang dari trigger, modul yang belum disiapkan diam total
+dan Z-Learning memperlakukannya seperti paket biasa: tombolnya terbuka. Lupa
+memasang trigger jadi tidak berbahaya, bukan sekadar tidak lengkap.
 
 Lalu ekspor ulang, salin berkasnya ke repositori ini, dan push. Vercel
 mem-publish ulang otomatis.
